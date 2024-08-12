@@ -156,11 +156,12 @@ class Projeto:
 class Pagamento:
     def __init__(self):
         self.dia = datetime.now().strftime("%d/%m/%Y")
-        self.pagamento = -1
+        self.pagamento = 0
     
     def calcularPagamento(self, dadosFuncionario):
         listaProjetos = ListaDeProjetos()
         self.tipoPagamento = dadosFuncionario['tipoPagamento']
+        self.nome = dadosFuncionario['nome']
         if dadosFuncionario['tipoFuncionario'] == 'assalariado':
             self.pagamento = dadosFuncionario['salario']
         elif dadosFuncionario['tipoFuncionario'] == 'hora':
@@ -175,9 +176,10 @@ class Pagamento:
                 for projeto in projetos:
                     if projeto['id'] == idProjeto:
                         self.pagamento += projeto['preco'] * horas
-
         elif dadosFuncionario['tipoFuncionario'] == 'comissionado':
             pass
+
+        self.pagamento *= (1 - (dadosFuncionario['deducoesFiscaisPadrao'] + dadosFuncionario['outrasDeducoes']))
 
     def getPagamento(self):
         return self.__dict__

@@ -96,18 +96,10 @@ class Empresa:
                     exit(1)
                 cartela = self.criaRecuperaCartela(dadosFuncionario)
                 print(cartela)
+                self.enviarCartela(cartela, dadosFuncionario)
                 projetos = [p.getDadosProjeto() for p in self.listaProjetos.getProjetos()]
                 print(projetos)
-                print("Qual projeto gostaria de registrar na cartela?")
-                idProjeto = int(input())
-                print("Quantas horas gostaria de registrar?")
-                horas = int(input())
-                if idProjeto in cartela['projeto'].keys():
-                    cartela['projeto'][idProjeto] += horas
-                else:
-                    cartela['projeto'][idProjeto] = horas
-                dadosFuncionario['cartelaPontos'] = cartela
-                self.listaFuncionarios.atualizarItem(dadosFuncionario)
+                self.editarHoras(cartela, dadosFuncionario)
                 break
 
             elif funcaoSistema == "4":
@@ -245,11 +237,36 @@ class Empresa:
         if 'cartelaPontos' not in dadosFuncionario.keys() or not dadosFuncionario['cartelaPontos'] or type(dadosFuncionario['cartelaPontos']) == float:
             now = datetime.now()
             nextMonth = datetime(now.year, now.month + 1, now.day)
-            dadosFuncionario['cartelaPontos'] = {"dataInicio": now.strftime("%d/%m/%Y"), "dataFim": nextMonth.strftime("%d/%m/%Y"), "projeto": {}}
+            dadosFuncionario['cartelaPontos'] = {"dataInicio": now.strftime("%d/%m/%Y"), "dataFim": nextMonth.strftime("%d/%m/%Y"), "projeto": {}, "enviado": False}
             self.listaFuncionarios.atualizarItem(dadosFuncionario)
             return dadosFuncionario['cartelaPontos']
         else:
             return ast.literal_eval(dadosFuncionario['cartelaPontos'])
+
+    def editarHoras(self, cartela, dadosFuncionario):
+        if cartela['enviado']:
+            print("Cartela enviada.")
+            return
+        print("Qual projeto gostaria de registrar na cartela?")
+        idProjeto = int(input())
+        print("Quantas horas gostaria de registrar?")
+        horas = int(input())
+        if idProjeto in cartela['projeto'].keys():
+            cartela['projeto'][idProjeto] += horas
+        else:
+            cartela['projeto'][idProjeto] = horas
+        dadosFuncionario['cartelaPontos'] = cartela
+        self.listaFuncionarios.atualizarItem(dadosFuncionario)
+
+    def enviarCartela(self, cartela, dadosFuncionario):
+        if cartela['enviado']:
+            return
+        print("Você gostaria de enviar a cartela? s/n")
+        resposta = input()
+        if resposta == "s":
+            cartela['enviado'] = True
+            dadosFuncionario['cartelaPontos'] = cartela
+            self.listaFuncionarios.atualizarItem(dadosFuncionario)
 
     def folhaPagamento(self):
         listaFuncionarios = self.listaFuncionarios.getListaFuncionarios()

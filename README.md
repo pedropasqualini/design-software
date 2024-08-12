@@ -8,3 +8,5 @@
 ```pip install -r requirements.txt```
 4. Rodar programa
 ```python3 main.py```
+## inputs:
+O projeto assume que os inputs de ID são inteiros, os valores de desconto são entre 0 e 1, 
